@@ -67,28 +67,33 @@ foreach(string post in posts)
 	});
 }
 db.SaveChanges();
-Console.WriteLine("\nBlogs:");
+Console.WriteLine("\n╔═══════╗\n║ Blogs ║\n╚═══════╝");
 foreach(Blog b in db.Blogs)
 {
-	Console.WriteLine($"\n{b.Name}");
-	Console.WriteLine($"BlogId: {b.BlogId}, Url: {b.Url}");
-	Console.WriteLine("    Posts: ");
+	Console.WriteLine($"{BoxString(b.Name)}");
+	Console.WriteLine($"BlogId: {b.BlogId}, Url: {b.Url} Name: {b.Name}");
+	Console.WriteLine($"{string.Format("{0,3} {1,-7}", "", "Posts: ")}");
+
 	foreach(Post p in b.Posts)
 	{
-		Console.WriteLine($"	Title: {p.Title}, Published On: {p.PublishedOn.ToShortDateString()}, Author: {db.Users.Find(p.UserId).Username} ");
-		Console.WriteLine($"		Content:\n				{p.Content}");
+		Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"PostId: {p.PostId}")}");
+		Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Titel: {p.Title}")}");
+		Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Content: {p.Content}")}");
+		Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Published on: {p.PublishedOn.ToShortDateString()}")}");
+		Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Blog: {db.Blogs.Find(p.BlogId).Name}")}");
+		Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Author: {db.Users.Find(p.UserId).Username}\n")}");
 	}
 }
 
-Console.WriteLine("\nUsers:");
-foreach(User u in db.Users)
+Console.WriteLine("\n╔═══════╗\n║ Users ║\n╚═══════╝");
+foreach (User u in db.Users)
 {
-	Console.WriteLine($"\n{u.Username}");
+	Console.WriteLine($"{BoxString(u.Username)}");
 	Console.WriteLine($"UserId: {u.UserId}, Username: {u.Username}, Password: {u.Password}");
-	Console.WriteLine("    Posts:");
+	Console.WriteLine($"{string.Format("{0,3} {1,-7}", "", "Posts: ")}");
 	foreach(Post p in u.Posts)
 	{
-		Console.WriteLine($"	Title: {p.Title}");
+		Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Title: {p.Title} - PostId: {p.PostId}")}");
 	}
 }
 
@@ -101,7 +106,9 @@ static int ParseId(string csvId)
 	}
 	else
 	{
-        Console.WriteLine("Couldn't parse id: {0}", id);
+        Console.WriteLine("Couldn't parse id: {0}", csvId);
+		Console.WriteLine("Shutting down");
+		Environment.Exit(1337);
     }
 	if(entityId == 0)
 	{
@@ -122,8 +129,20 @@ static DateTime ParseDate(string csvDate)
 	}
 	catch (FormatException)
 	{
-		Console.WriteLine("{0} is not in the correct format", csvDate);
+		Console.WriteLine("'{0}' is not in the correct format", csvDate);
 		Thread.Sleep(1337);
+		Environment.Exit(300);
 	}
 	return date;
+}
+
+static string BoxString(string username)
+{
+	string boxLength= "";
+	for (int i = 0; i < username.Length + 2; i++)
+	{
+		boxLength+= "─";
+    }
+	string user = $"┌{boxLength}┐ \n│ {username} │\n└{boxLength}┘";
+	return user;
 }
