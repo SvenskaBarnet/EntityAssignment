@@ -13,7 +13,7 @@ public class BloggingContext : DbContext
 	public BloggingContext()
 	{
 		var folder = Environment.CurrentDirectory;
-		DbPath = System.IO.Path.Join(folder, "entityassignment.db");
+		DbPath = System.IO.Path.Join(folder, "cs.forts-Klas-Hermansson.db");
 	}
 
 	protected override void OnConfiguring(DbContextOptionsBuilder options)=> options.UseSqlite($"Data Source={DbPath}");
