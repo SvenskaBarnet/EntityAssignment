@@ -23,7 +23,6 @@ foreach (string blog in blogs)
     int blogId = ParseId(blogInfo[0]);
     string url = blogInfo[1];
     string name = blogInfo[2];
-    int postId = ParseId(blogInfo[3]);
     if (db.Blogs.Find(blogId) == null)
     {
         db.Add(new Blog
@@ -32,8 +31,6 @@ foreach (string blog in blogs)
             Url = url,
             Name = name
         });
-        db.SaveChanges();
-        db.Blogs.Find(blogId).PostId.Add(postId);
     }
 }
 db.SaveChanges();
@@ -44,17 +41,14 @@ foreach (string user in users)
     int userId = ParseId(userInfo[0]);
     string username = userInfo[1];
     string password = userInfo[2];
-    int postId = ParseId(userInfo[3]);
     if (db.Users.Find(userId) == null)
     {
-        db.Add(new User 
+        db.Add(new User
         {
             UserId = userId,
             Username = username,
             Password = password
         });
-        db.SaveChanges();
-        db.Users.Find(userId).PostId.Add(postId);
     }
 }
 db.SaveChanges();
@@ -68,18 +62,18 @@ foreach (string post in posts)
     DateTime publishedOn = ParseDate(postInfo[3]);
     int userId = ParseId(postInfo[4]);
     int blogId = ParseId(postInfo[5]);
-        db.Add(new Post
-        {
-            PostId = postId,
-            Title = title,
-            Content = content,
-            PublishedOn = publishedOn,
-            UserId = userId,
-            BlogId = blogId
-        });
+    db.Add(new Post
+    {
+        PostId = postId,
+        Title = title,
+        Content = content,
+        PublishedOn = publishedOn,
+        UserId = userId,
+        BlogId = blogId
+    });
 }
 db.SaveChanges();
-Console.WriteLine("\n╔═══════╗\n║ Blogs ║\n╚═══════╝");
+Console.WriteLine("\n╔═══════════════╗\n║ DATABASE TREE ║\n╚═══════════════╝");
 foreach (Blog b in db.Blogs)
 {
     Console.WriteLine($"{BoxString(b.Name)}");
@@ -91,23 +85,13 @@ foreach (Blog b in db.Blogs)
         Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"PostId: {p.PostId}")}");
         Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Titel: {p.Title}")}");
         Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Content: {p.Content}")}");
-        Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Published on: {p.PublishedOn.ToShortDateString()}")}");
-        Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Blog: {db.Blogs.Find(p.BlogId).Name}")}");
-        Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Author: {db.Users.Find(p.UserId).Username}\n")}");
+        Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Published on: {p.PublishedOn.ToShortDateString()}\n")}");
+        Console.WriteLine($"{string.Format("{0,7} {1,7} {2, -20}", "", "", $"Author details:")}");
+        Console.WriteLine($"{string.Format("{0,7} {1,7} {2, -20}", "", "", $"Username: {p.User?.Username}")}");
+        Console.WriteLine($"{string.Format("{0,7} {1,7} {2, -20}", "", "", $"Password: {p.User?.Password}\n")}");
     }
 }
 
-Console.WriteLine("\n╔═══════╗\n║ Users ║\n╚═══════╝");
-foreach (User u in db.Users)
-{
-    Console.WriteLine($"{BoxString(u.Username)}");
-    Console.WriteLine($"UserId: {u.UserId}, Username: {u.Username}, Password: {u.Password}");
-    Console.WriteLine($"{string.Format("{0,3} {1,-7}", "", "Posts: ")}");
-    foreach (Post p in u.Posts)
-    {
-        Console.WriteLine($"{string.Format("{0,7} {1, -20}", "", $"Title: {p.Title} - PostId: {p.PostId}")}");
-    }
-}
 
 static int ParseId(string csvId)
 {
@@ -148,10 +132,10 @@ static DateTime ParseDate(string csvDate)
     return date;
 }
 
-static string BoxString(string username)
+static string BoxString(string? username)
 {
     string boxLength = "";
-    for (int i = 0; i < username.Length + 2; i++)
+    for (int i = 0; i < username?.Length + 2; i++)
     {
         boxLength += "─";
     }

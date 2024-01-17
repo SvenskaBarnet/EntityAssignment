@@ -7,5 +7,4 @@ public class User
 	public string? Password {get; set;}
 	
 	public List<Post> Posts { get; set; } = new();
-	public List<int> PostId { get; set; } = new();
 }
